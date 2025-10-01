@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "C:\Users\Syreo\OneDrive\Desktop\code_index\python\dhcp_calc\word_processor.py", line 12, in <module>
+    from reportlab.lib.pagesizes import letter
+ModuleNotFoundError: No module named 'reportlab'
