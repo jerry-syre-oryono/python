@@ -409,11 +409,11 @@ class WordProcessor:
 
     def toggle_bold(self):
         # Toggle bold style for the selected text
-        self.apply_tag("bold", Font(weight="bold"))
+        self.apply_tag("bold", font=Font(weight="bold"))
 
     def toggle_italic(self):
         # Toggle italic style for the selected text
-        self.apply_tag("italic", Font(slant="italic"))
+        self.apply_tag("italic", font=Font(slant="italic"))
 
     def toggle_underline(self):
         # Toggle underline style for the selected text
