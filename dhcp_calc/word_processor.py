@@ -3,9 +3,7 @@ import tkinter as tk
 from tkinter import ttk, font, messagebox, filedialog, scrolledtext, colorchooser
 from tkinter.font import Font
 import os
-import json
 from tkinter import *
-from tkinter.ttk import *
 import win32print
 import win32api
 import tempfile
@@ -13,6 +11,7 @@ import tempfile
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.styles import getSampleStyleSheet
+from tkinter.ttk import *
 from reportlab.platypus import Paragraph
 
 # Class to handle pagination
