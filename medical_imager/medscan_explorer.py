@@ -56,10 +56,12 @@ def query_vision_model(image_path):
         image_b64 = get_image_base64(image_path)
         
         prompt = (
-            "You are a medical imaging analysis assistant specializing in ophthalmology. Analyze the provided retina scan image. "
-            "Identify and list key potential abnormalities or notable features specific to retinal health. For each finding, provide a short, neutral description. "
-            "If there are no clear findings, state that. Present the output as a simple list. Do not add conversational text or disclaimers."
-            "\n\nExample Output:\n- Macular Edema: Swelling observed in the macular region.\n- Retinal Hemorrhage: Presence of bleeding on the retinal surface."
+            "You are an educational assistant for analyzing retinal fundus photographs. You will be shown a medical scan. "
+            "Your task is to ONLY describe what you can visually observe. Use neutral, factual language. "
+            "DO NOT attempt to diagnose. DO NOT invent findings. DO NOT interpret or provide medical advice. "
+            "For example, describe 'red blotches' or 'white fluffy patches' instead of 'hemorrhages' or 'cotton wool spots'. "
+            "If there are no clear findings, state that. "
+            "Conclude your response with the exact phrase: 'This is NOT a diagnosis. Consult a licensed specialist immediately.'"
         )
 
         payload = {
@@ -306,21 +308,24 @@ class MedScanExplorer:
             self.root.update()
 
             # Step 2: LLM for explanation
-            prompt = f"""You are an educational AI assistant helping students understand AI-assisted medical imaging.
+            prompt = f"""You are an educational AI assistant. Your role is to present the findings from a vision model and provide critical safety context.
 
-A vision model analyzed a medical scan and reported the following raw observations:
+A vision model analyzed a retinal scan and reported the following raw visual observations:
 ---
 {vision_findings}
 ---
 
-❗ Critical Instructions:
-1.  Synthesize these raw findings into a clear, educational summary.
-2.  For each finding, briefly explain what it *might* suggest in general medical terms, but strictly avoid making a diagnosis.
-3.  Emphasize the critical limitations: AI models can make mistakes, misinterpret images, and completely lack the clinical context of a real patient.
-4.  Conclude with a strong, unmissable warning: "This AI-generated output is for educational purposes ONLY and must be reviewed by a licensed medical professional (e.g., a radiologist) before any clinical consideration."
-5.  Keep the tone professional, cautious, and safety-focused. Do not use overly confident language.
+❗ Your task is to structure the final output as follows:
 
-Educational Explanation:"""
+1.  **Acknowledge Limitations:** Start with a clear statement that this is not a diagnosis and is for educational purposes only.
+2.  **Present Raw Observations:** Present the vision model's findings under a clear heading like "Raw Visual Observations".
+3.  **Explain the Observations (Objectively):** Briefly explain what the observed features *could* represent in general terms, without diagnosing. For example, if the vision model reported "red blotches", you can say "Red blotches in a retinal scan are often referred to as hemorrhages and can be a sign of various conditions."
+4.  **Emphasize Next Steps & Risks:** State clearly that these findings require evaluation by a qualified ophthalmologist and that delay could lead to serious consequences, including vision loss.
+5.  **Include a Strong Final Warning:** Conclude with an unmissable, bold warning about not using this for clinical decisions.
+
+**Crucially, DO NOT invent findings, DO NOT go beyond the raw observations, and DO NOT offer a diagnosis.** Keep the tone strictly educational and safety-focused.
+
+Final Report:"""
 
             explanation = query_llm(prompt)
 
