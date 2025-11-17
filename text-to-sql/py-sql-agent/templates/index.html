@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Agent - CRUD Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            background: #f9f9f9;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        select {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+
+        .results {
+            margin-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .results h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .query-examples {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .query-examples h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .query-examples code {
+            display: block;
+            background: white;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .query-examples code:hover {
+            background: #e8edff;
+            color: #667eea;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 40px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 30px;
+            background: #f9f9f9;
+            text-align: right;
+        }
+
+        .modal-footer button {
+            margin-left: 10px;
+        }
+
+        .result-summary {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-summary p {
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .result-summary strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 SQL Agent Dashboard</h1>
+            <p>Natural Language Database CRUD Operations</p>
+        </div>
+
+        <div class="content">
+            <!-- READ Section -->
+            <div class="section">
+                <h2>📖 READ</h2>
+                <div class="query-examples">
+                    <h4>Examples:</h4>
+                    <code onclick="document.getElementById('readQuery').value = this.textContent; executeRead()">show engineers</code>
+                    <code onclick="document.getElementById('readQuery').value = this.textContent; executeRead()">users over 30</code>
+                    <code onclick="document.getElementById('readQuery').value = this.textContent; executeRead()">show all users</code>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="readQuery" placeholder="Enter your query (e.g., 'show engineers')">
+                    <button class="btn-info" onclick="executeRead()">Search</button>
+                </div>
+                <div id="readMessage" class="message"></div>
+            </div>
+
+            <!-- CREATE Section -->
+            <div class="section">
+                <h2>➕ CREATE</h2>
+                <div class="form-group">
+                    <input type="text" id="createName" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="createAge" placeholder="Age" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="createEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="createDept" placeholder="Department" required>
+                </div>
+                <div class="form-group">
+                    <button class="btn-success" onclick="executeCreate()" style="flex: 1;">Add User</button>
+                </div>
+                <div id="createMessage" class="message"></div>
+            </div>
+
+            <!-- UPDATE Section -->
+            <div class="section">
+                <h2>✏️ UPDATE</h2>
+                <div class="form-group">
+                    <input type="number" id="updateId" placeholder="User ID" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="updateField" placeholder="Field (name, age, email, department)" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="updateValue" placeholder="New Value">
+                </div>
+                <div class="form-group">
+                    <button class="btn-primary" onclick="executeUpdate()" style="flex: 1;">Update</button>
+                </div>
+                <div id="updateMessage" class="message"></div>
+            </div>
+
+            <!-- DELETE Section -->
+            <div class="section">
+                <h2>🗑️ DELETE</h2>
+                <div class="form-group">
+                    <input type="number" id="deleteId" placeholder="User ID to Delete" required>
+                </div>
+                <div class="form-group">
+                    <button class="btn-danger" onclick="executeDelete()" style="flex: 1;">Delete User</button>
+                </div>
+                <div id="deleteMessage" class="message"></div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="section full-width results" id="resultsSection" style="display: none;">
+                <h3>📊 Results</h3>
+                <div class="table-container" id="resultsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Query Results</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        function showModal(title, content) {
+            const modal = document.getElementById('resultsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('resultsModal');
+            modal.classList.remove('show');
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('resultsModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function showMessage(elementId, message, type = 'info') {
+            const messageEl = document.getElementById(elementId);
+            messageEl.textContent = message;
+            messageEl.className = `message show ${type}`;
+            setTimeout(() => {
+                messageEl.classList.remove('show');
+            }, 5000);
+        }
+
+        function formatResults(data, operationType = 'READ') {
+            let html = '';
+            
+            // Summary section
+            if (operationType === 'READ' && Array.isArray(data)) {
+                html += `<div class="result-summary">
+                    <p><strong>Results:</strong> ${data.length} row(s) returned</p>
+                </div>`;
+                
+                if (data.length === 0) {
+                    html += '<p>No results found.</p>';
+                } else {
+                    const headers = Object.keys(data[0]);
+                    html += '<div class="table-container"><table><thead><tr>';
+                    headers.forEach(h => html += `<th>${h}</th>`);
+                    html += '</tr></thead><tbody>';
+                    data.forEach(row => {
+                        html += '<tr>';
+                        headers.forEach(h => html += `<td>${row[h]}</td>`);
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table></div>';
+                }
+            } else if (operationType === 'CREATE' && data && data.id) {
+                html += `<div class="result-summary">
+                    <p><strong>✅ User Created Successfully!</strong></p>
+                    <p><strong>ID:</strong> ${data.id}</p>
+                    <p><strong>Name:</strong> ${data.name}</p>
+                    <p><strong>Age:</strong> ${data.age}</p>
+                    <p><strong>Email:</strong> ${data.email}</p>
+                    <p><strong>Department:</strong> ${data.department}</p>
+                </div>`;
+            } else if (operationType === 'UPDATE' && data && data.id) {
+                html += `<div class="result-summary">
+                    <p><strong>✅ User Updated Successfully!</strong></p>
+                    <p><strong>User ID:</strong> ${data.id}</p>
+                    <p><strong>Updated Fields:</strong> ${Object.keys(data).filter(k => k !== 'id').join(', ')}</p>
+                    <div style="margin-top: 15px; padding: 10px; background: white; border-radius: 5px; border-left: 3px solid #4caf50;">
+                        <strong>New Values:</strong>
+                        <ul style="margin: 10px 0 0 20px;">
+                            ${Object.entries(data).filter(([k]) => k !== 'id').map(([k, v]) => `<li>${k}: ${v}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>`;
+            } else if (operationType === 'DELETE' && data && data.deleted) {
+                html += `<div class="result-summary" style="border-left-color: #f44336; background: #ffebee;">
+                    <p style="color: #c62828;"><strong>✅ User Deleted Successfully!</strong></p>
+                    <p><strong>Deleted User ID:</strong> ${data.id}</p>
+                </div>`;
+            } else if (typeof data === 'object' && data !== null) {
+                html += `<div class="result-summary">
+                    <p><strong>Operation completed successfully!</strong></p>
+                    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">${JSON.stringify(data, null, 2)}</pre>
+                </div>`;
+            } else {
+                html += `<p>${JSON.stringify(data)}</p>`;
+            }
+            
+            return html;
+        }
+
+        async function executeRead() {
+            const query = document.getElementById('readQuery').value.trim();
+            if (!query) {
+                showMessage('readMessage', 'Please enter a query', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    showMessage('readMessage', `Error: ${data.error}`, 'error');
+                    showModal('❌ Error', `<p style="color: #721c24;">${data.error}</p>`);
+                } else {
+                    showMessage('readMessage', `Query executed successfully!`, 'success');
+                    const content = formatResults(data.result, 'READ');
+                    showModal('📖 Search Results', content);
+                }
+            } catch (error) {
+                showMessage('readMessage', `Network error: ${error.message}`, 'error');
+                showModal('❌ Network Error', `<p style="color: #721c24;">${error.message}</p>`);
+            }
+        }
+
+        async function executeCreate() {
+            const name = document.getElementById('createName').value.trim();
+            const age = document.getElementById('createAge').value.trim();
+            const email = document.getElementById('createEmail').value.trim();
+            const dept = document.getElementById('createDept').value.trim();
+
+            if (!name || !age || !email || !dept) {
+                showMessage('createMessage', 'Please fill all fields', 'error');
+                return;
+            }
+
+            const query = `add ${name} age ${age} email ${email} department ${dept}`;
+
+            try {
+                const response = await fetch(`${API_URL}/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    showMessage('createMessage', `Error: ${data.error}`, 'error');
+                    showModal('❌ Error', `<p style="color: #721c24;">${data.error}</p>`);
+                } else {
+                    showMessage('createMessage', 'User created successfully!', 'success');
+                    const content = formatResults(data.result, 'CREATE');
+                    showModal('➕ User Created', content);
+                    document.getElementById('createName').value = '';
+                    document.getElementById('createAge').value = '';
+                    document.getElementById('createEmail').value = '';
+                    document.getElementById('createDept').value = '';
+                }
+            } catch (error) {
+                showMessage('createMessage', `Network error: ${error.message}`, 'error');
+                showModal('❌ Network Error', `<p style="color: #721c24;">${error.message}</p>`);
+            }
+        }
+
+        async function executeUpdate() {
+            const id = document.getElementById('updateId').value.trim();
+            const field = document.getElementById('updateField').value.trim();
+            const value = document.getElementById('updateValue').value.trim();
+
+            if (!id || !field || !value) {
+                showMessage('updateMessage', 'Please fill all fields', 'error');
+                return;
+            }
+
+            const query = `update user ${id} ${field} ${value}`;
+
+            try {
+                const response = await fetch(`${API_URL}/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    showMessage('updateMessage', `Error: ${data.error}`, 'error');
+                    showModal('❌ Error', `<p style="color: #721c24;">${data.error}</p>`);
+                } else {
+                    showMessage('updateMessage', 'User updated successfully!', 'success');
+                    const content = formatResults(data.result, 'UPDATE');
+                    showModal('✏️ User Updated', content);
+                    document.getElementById('updateId').value = '';
+                    document.getElementById('updateField').value = '';
+                    document.getElementById('updateValue').value = '';
+                }
+            } catch (error) {
+                showMessage('updateMessage', `Network error: ${error.message}`, 'error');
+                showModal('❌ Network Error', `<p style="color: #721c24;">${error.message}</p>`);
+            }
+        }
+
+        async function executeDelete() {
+            const id = document.getElementById('deleteId').value.trim();
+
+            if (!id) {
+                showMessage('deleteMessage', 'Please enter a User ID', 'error');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete user ${id}?`)) {
+                return;
+            }
+
+            const query = `delete user ${id}`;
+
+            try {
+                const response = await fetch(`${API_URL}/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    showMessage('deleteMessage', `Error: ${data.error}`, 'error');
+                    showModal('❌ Error', `<p style="color: #721c24;">${data.error}</p>`);
+                } else {
+                    showMessage('deleteMessage', 'User deleted successfully!', 'success');
+                    const content = formatResults(data.result, 'DELETE');
+                    showModal('🗑️ User Deleted', content);
+                    document.getElementById('deleteId').value = '';
+                }
+            } catch (error) {
+                showMessage('deleteMessage', `Network error: ${error.message}`, 'error');
+                showModal('❌ Network Error', `<p style="color: #721c24;">${error.message}</p>`);
+            }
+        }
+    </script>
+</body>
+</html>
