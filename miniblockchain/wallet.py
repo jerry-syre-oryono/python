@@ -1,6 +1,7 @@
 import hashlib
 import json
 import time
+from typing import Dict
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from ecdsa.util import sigencode_der, sigdecode_der
 
