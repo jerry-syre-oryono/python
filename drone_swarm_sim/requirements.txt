@@ -1,0 +1,34 @@
+# Core dependencies
+numpy>=1.24.0
+opencv-python>=4.8.0
+matplotlib>=3.7.0
+scipy>=1.10.0
+pillow>=10.0.0
+requests>=2.31.0
+
+# Qdrant
+qdrant-client>=1.9.0
+
+# Face Recognition (optional, falls back to sim)
+facenet-pytorch>=2.5.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# LLM (for distributed mode)
+transformers>=4.35.0
+accelerate>=0.25.0
+bitsandbytes>=0.41.0
+
+# Communication
+paho-mqtt>=1.6.1
+websockets>=12.0
+cryptography>=41.0.0
+
+# Simulation
+pygame>=2.5.0
+pyopengl>=3.1.0
+
+# Testing & Dev
+pytest>=7.4.0
+black>=23.0.0
+python-dotenv>=1.0.0
