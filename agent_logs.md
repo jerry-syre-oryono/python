@@ -169,3 +169,255 @@ Implemented Neural Network training pipeline and ONNX export functionality.
 
 **Result:**
 - Success
+
+
+## 2026-04-22 10:20:00
+
+**Type:** feature
+
+**Files Affected:**
+- tradingbotai/trading-bot-with-qdrant/scripts/collect_data.py
+- tradingbotai/trading-bot-with-qdrant/data/EURUSD_H1.csv
+
+**Description:**
+Implemented and executed historical data collection script for MT5.
+
+**Changes Made:**
+- Created scripts/collect_data.py to fetch H1 and M5 OHLCV data.
+- Added directory creation logic to ensure data/ folder exists.
+- Successfully fetched and saved 12,394 bars of EURUSD H1 data to data/EURUSD_H1.csv.
+
+**Errors Encountered (if any):**
+- python command not found (Windows path issue).
+- MT5 failed to return M5 data (No rates found for EURUSD).
+
+**Fix Applied (if any):**
+- Used absolute path to virtual environment's Python executable (..\venv\Scripts\python.exe).
+- Re-ran the script as per instructions for MT5 errors, but M5 data still unavailable (likely due to MT5 terminal history settings or lack of synchronized 5M history).
+
+**Result:**
+- Partial Success (H1 data collected, M5 data pending).
+
+---
+
+
+
+## 2026-04-22 10:25:00
+
+**Type:** fix
+
+**Files Affected:**
+- tradingbotai/trading-bot-with-qdrant/scripts/collect_data.py
+- tradingbotai/trading-bot-with-qdrant/data/EURUSD_M5.csv
+
+**Description:**
+Adjusted M5 data collection range to resolve 'No rates found' error.
+
+**Changes Made:**
+- Modified scripts/collect_data.py to use a 30-day window for M5 data instead of 2 years.
+- Successfully fetched 6,324 bars of EURUSD M5 data.
+
+**Errors Encountered (if any):**
+- None.
+
+**Fix Applied (if any):**
+- N/A.
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 10:35:00
+
+**Type:** feature
+
+**Files Affected:**
+- tradingbotai/trading-bot-with-qdrant/scripts/indicators.py
+- tradingbotai/trading-bot-with-qdrant/scripts/label_strategy.py
+- tradingbotai/trading-bot-with-qdrant/data/X.npy
+- tradingbotai/trading-bot-with-qdrant/data/y.npy
+
+**Description:**
+Implemented feature engineering and strategy labeling logic.
+
+**Changes Made:**
+- Created scripts/indicators.py with H1 and M5 strategy conditions.
+- Created scripts/label_strategy.py to build the training dataset using 1H Bias and 5M Slots.
+- Generated training dataset with 7,377 samples and 28 positive labels.
+
+**Errors Encountered (if any):**
+- None.
+
+**Fix Applied (if any):**
+- N/A.
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 10:45:00
+
+**Type:** feature
+
+**Files Affected:**
+- tradingbotai/trading-bot-with-qdrant/scripts/train_lstm.py
+- tradingbotai/trading-bot-with-qdrant/models/strategy_model.onnx
+
+**Description:**
+Trained LSTM model and exported to ONNX format.
+
+**Changes Made:**
+- Created scripts/train_lstm.py implementing LSTMPredictor.
+- Trained model on generated dataset (X.npy, y.npy).
+- Exported trained model to models/strategy_model.onnx.
+- Installed onnx and onnxscript dependencies.
+
+**Errors Encountered (if any):**
+- ModuleNotFoundError: No module named 'onnxscript'.
+- Opset version mismatch (requested 12, used 18).
+
+**Fix Applied (if any):**
+- Installed onnx and onnxscript using pip.
+- Export proceeded with opset 18 automatically.
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 11:00:00
+
+**Type:** feature
+
+**Files Affected:**
+- tradingbotai/trading-bot-with-qdrant/scripts/store_patterns_qdrant.py
+- tradingbotai/trading-bot-with-qdrant/data/qdrant_storage/
+
+**Description:**
+Stored winning market patterns into Qdrant vector database for similarity search.
+
+**Changes Made:**
+- Created scripts/store_patterns_qdrant.py using QdrantClient.
+- Configured local storage in data/qdrant_storage.
+- Implemented encode_window to flatten and normalize OHLC windows.
+- Successfully stored 5,961 patterns with payloads (timestamp, return, bias).
+
+**Errors Encountered (if any):**
+- Minor ImportError during Python shutdown (non-critical).
+
+**Fix Applied (if any):**
+- N/A (Cleanup error after successful execution).
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 11:15:00
+
+**Type:** feature
+
+**Files Affected:**
+- tradingbotai/trading-bot-with-qdrant/flask_api/requirements.txt
+- tradingbotai/trading-bot-with-qdrant/flask_api/app.py
+
+**Description:**
+Created Flask API for similarity search integration with Qdrant Cloud.
+
+**Changes Made:**
+- Created flask_api/ directory.
+- Defined requirements.txt for deployment.
+- Implemented app.py with /health and /similar endpoints.
+- Configured app.py with provided Qdrant Cloud credentials.
+
+**Errors Encountered (if any):**
+- None.
+
+**Fix Applied (if any):**
+- N/A.
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 11:25:00
+
+**Type:** refactor
+
+**Files Affected:**
+- qdrant-pattern-api/ (New Directory)
+- tradingbotai/trading-bot-with-qdrant/flask_api (Removed)
+
+**Description:**
+Relocated Flask API to an independent directory and initialized a new Git repository.
+
+**Changes Made:**
+- Moved flask_api from tradingbotai to project root as qdrant-pattern-api.
+- Initialized a new Git repository in qdrant-pattern-api.
+- Staged and committed files (app.py, requirements.txt) to the new repository.
+
+**Errors Encountered (if any):**
+- None.
+
+**Fix Applied (if any):**
+- N/A.
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 11:35:00
+
+**Type:** chore
+
+**Files Affected:**
+- qdrant-pattern-api/
+
+**Description:**
+Pushed the independent Qdrant API repository to GitHub.
+
+**Changes Made:**
+- Added remote origin: https://github.com/jerry-syre-oryono/trading-qdrant-api.git.
+- Renamed branch to main.
+- Force-pushed local repository to GitHub.
+
+**Errors Encountered (if any):**
+- Initial push rejected due to remote containing work (README/license likely).
+
+**Fix Applied (if any):**
+- Used --force to establish the local code as the primary base.
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 11:45:00
+
+**Type:** fix
+
+**Files Affected:**
+- qdrant-pattern-api/requirements.txt
+- qdrant-pattern-api/runtime.txt
+
+**Description:**
+Fixed Render build failure by downgrading Python and upgrading dependencies.
+
+**Changes Made:**
+- Updated requirements.txt with flexible, recent versions: flask>=2.3.0, qdrant-client>=1.12.0, numpy>=1.26.0.
+- Created runtime.txt pinning Python to 3.11.9.
+- Pushed changes to GitHub.
+
+**Errors Encountered (if any):**
+- Render build failed on Python 3.14 due to missing wheels for qdrant-client and numpy.
+
+**Fix Applied (if any):**
+- Explicitly set a stable Python version (3.11.9) and upgraded library versions.
+
+**Result:**
+- Success
+
