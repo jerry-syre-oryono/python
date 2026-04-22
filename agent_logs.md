@@ -421,3 +421,57 @@ Fixed Render build failure by downgrading Python and upgrading dependencies.
 **Result:**
 - Success
 
+
+
+## 2026-04-22 11:55:00
+
+**Type:** fix
+
+**Files Affected:**
+- qdrant-pattern-api/app.py
+
+**Description:**
+Added a root (/) route to resolve the 404 Not Found error when accessing the base URL.
+
+**Changes Made:**
+- Implemented an index route returning JSON with API status and available endpoints.
+- Pushed update to GitHub for Render redeployment.
+
+**Errors Encountered (if any):**
+- User reported 404 Not Found at root URL.
+
+**Fix Applied (if any):**
+- Added explicit route for '/' in app.py.
+
+**Result:**
+- Success
+
+
+
+## 2026-04-22 12:05:00
+
+**Type:** fix
+
+**Files Affected:**
+- tradingbotai/trading-bot-with-qdrant/scripts/store_patterns_qdrant.py
+- qdrant-pattern-api/app.py
+
+**Description:**
+Populated Qdrant Cloud and improved API error handling.
+
+**Changes Made:**
+- Updated store_patterns_qdrant.py with cloud credentials and successfully uploaded 5,961 patterns.
+- Updated app.py with robust JSON parsing, window key validation, and vector size (120) validation.
+- Pushed API updates to GitHub for redeployment.
+
+**Errors Encountered (if any):**
+- User reported 400 Bad Request on /similar endpoint.
+- Cloud Qdrant collection was previously empty.
+
+**Fix Applied (if any):**
+- Populated cloud collection.
+- Added detailed error messages and validation in app.py.
+
+**Result:**
+- Success
+

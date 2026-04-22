@@ -4,11 +4,11 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct
 import os
 
-# Using local storage for demonstration; replace with URL/API_KEY for cloud
-QDRANT_PATH = "data/qdrant_storage"
-os.makedirs(QDRANT_PATH, exist_ok=True)
+# Qdrant Cloud Credentials
+QDRANT_URL = "https://d0754f8d-a323-402c-8dba-4cc8079c15e5.eu-west-2-0.aws.cloud.qdrant.io"
+QDRANT_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6MThkZTVlZGYtYzA0MS00NDg5LTkxYmMtM2UwYTI0YjQ0YWMwIn0.9-lx_H6LELMk2NOLJzdXPWIBWPFZgRi3gqk8FwE0u8U"
 
-client = QdrantClient(path=QDRANT_PATH)
+client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
 def encode_window(window):
     # Flatten the 4 features (OHLC) over the window size
